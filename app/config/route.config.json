@@ -1,0 +1,196 @@
+{
+    "routes" : [
+        
+            {
+                "controller": "../components/user/controller/user.js",
+                "route": "/api/v1/user/login",
+                "method": "get",
+                "action": "login",
+                "secured": false,
+                "isAdmin" : false,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/user/controller/user.js",
+                "route": "/api/v1/user/createAdmin",
+                "method": "post",
+                "action": "createAdmin",
+                "secured": false,
+                "isAdmin" : false,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/user/controller/user.js",
+                "route": "/api/v1/user/createUser",
+                "method": "post",
+                "action": "createUser",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/user/controller/user.js",
+                "route": "/api/v1/user/getAll",
+                "method": "get",
+                "action": "getAllUsers",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/user/controller/user.js",
+                "route": "/api/v1/user/:userId",
+                "method": "get",
+                "action": "getUserByUserId",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/user/controller/user.js",
+                "route": "/api/v1/user/:userId",
+                "method": "put",
+                "action": "updateUserByUserId",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/user/controller/user.js",
+                "route": "/api/v1/user/:userId",
+                "method": "delete",
+                "action": "deleteUserByUserId",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/bank/controller/bank.js",
+                "route": "/api/v1/bank/create",
+                "method": "post",
+                "action": "createBank",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/bank/controller/bank.js",
+                "route": "/api/v1/bank",
+                "method": "get",
+                "action": "getAllBanks",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/bank/controller/bank.js",
+                "route": "/api/v1/bank/:bankId",
+                "method": "get",
+                "action": "getBankByBankId",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/bank/controller/bank.js",
+                "route": "/api/v1/bank/:bankId",
+                "method": "put",
+                "action": "updateBankByBankId",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/bank/controller/bank.js",
+                "route": "/api/v1/bank/:bankId",
+                "method": "delete",
+                "action": "deleteBankByBankId",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/account/controller/account.js",
+                "route": "/api/v1/user/:userId/account",
+                "method": "post",
+                "action": "createAccount",
+                "secured": false,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
+            },
+            {
+                "controller": "../components/account/controller/account.js",
+                "route": "/api/v1/user/:userId/account",
+                "method": "get",
+                "action": "getAllAccounts",
+                "secured": false,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
+            },
+            {
+                "controller": "../components/account/controller/account.js",
+                "route": "/api/v1/user/:userId/account/:accountNumber",
+                "method": "get",
+                "action": "getAccountByAccountNumber",
+                "secured": false,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
+            },
+            {
+                "controller": "../components/account/controller/account.js",
+                "route": "/api/v1/user/:userId/account/:accountNumber",
+                "method": "delete",
+                "action": "deleteAccountByAccountNumber",
+                "secured": false,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
+            },
+            {
+                "controller": "../components/account/controller/account.js",
+                "route": "/api/v1/user/:userId/account/:accountNumber/deposit",
+                "method": "put",
+                "action": "deposit",
+                "secured": false,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
+            },
+            {
+                "controller": "../components/account/controller/account.js",
+                "route": "/api/v1/user/:userId/account/:accountNumber/withdraw",
+                "method": "put",
+                "action": "withdraw",
+                "secured": false,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
+            },
+            {
+                "controller": "../components/account/controller/account.js",
+                "route": "/api/v1/user/:userId/account/:accountNumber/transfer",
+                "method": "put",
+                "action": "transferMoney",
+                "secured": false,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
+            }
+        
+    ] 
+}
