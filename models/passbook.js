@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       passbooks.belongsTo(models.accounts, {
         foreignKey:"account_number",
-        as:"account",
         onDelete:"CASCADE",
         hooks:true
       })

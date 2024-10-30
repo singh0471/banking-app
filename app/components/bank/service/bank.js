@@ -10,11 +10,11 @@ const InvalidError = require("../../../errors/invalidError");
 
 class BankService{
     #associationMap = {
-        account : {
+        accounts : {
             model : accountConfig.model,
             required : true
         },
-        ledger : {
+        ledgers : {
             model:ledgerConfig.model,
             required:true
         },
@@ -28,11 +28,11 @@ class BankService{
             includeQuery = [includeQuery];
         }
 
-        if(includeQuery?.includes(bankConfig.association.account)){
-            association.push(this.#associationMap.account);
+        if(includeQuery?.includes(bankConfig.association.accounts)){
+            association.push(this.#associationMap.accounts);
         }
-        if(includeQuery?.includes(bankConfig.association.ledger)){
-            association.push(this.#associationMap.ledger);
+        if(includeQuery?.includes(bankConfig.association.ledgers)){
+            association.push(this.#associationMap.ledgers);
         }
         return association;
 
@@ -223,7 +223,7 @@ class BankService{
             }
           );
           if (accountCount > 0)
-            throw new InvalidError("Cannot delete bank since there exists accounts in this bank...");
+            throw new InvalidError("The bank cannot be deleted because it has accounts associated with it.");
     
           const isDeleted = await bankConfig.model.destroy(
             {

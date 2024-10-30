@@ -13,14 +13,12 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       banks.hasMany(models.accounts,{
         foreignKey:"bankId",
-        as : "account",
         onDelete:"CASCADE",
         hooks:true
       })
 
       banks.hasMany(models.ledgers,{
         foreignKey:"bankId",
-        as : "ledger",
         onDelete:"CASCADE",
          hooks:true
       })

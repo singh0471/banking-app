@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       ledgers.belongsTo(models.banks, {
         foreignKey:"bankId",
-        as :"bank",
         onDelete:"CASCADE",
         hooks:true
       })

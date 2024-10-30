@@ -11,7 +11,7 @@ const userConfig = require("../../../model-config/user-config");
 const {createUUID} = require("../../../utils/uuid");
 class AccountService{
     #associationMap = {
-        passbook:{
+        passbooks:{
             model:passbookConfig.model,
             require:true
         }
@@ -23,26 +23,20 @@ class AccountService{
         if(!Array.isArray(includeQuery))
             includeQuery = [includeQuery];
 
-        if(includeQuery?.includes(accountConfig.association.passbook)){
-            associations.push(this.#associationMap.passbook);
+        if(includeQuery?.includes(accountConfig.association.passbooks)){
+            associations.push(this.#associationMap.passbooks);
         }
         return associations;
     }
 
     async #updateTotalBalance(userId,t){
-        // if(!t){
-        //     t = await transaction();
-        // }
+       
         try{
             Logger.info("update total balance started");
 
             const totalBalance = await accountConfig.model.sum("accountBalance",{where:{userId:userId}});
 
             console.log(totalBalance);
-
-            //const isUpdated = await userConfig.model.update({totalBalance:totalBalance},{where:{userId}});
-
-            //console.log(isUpdated);
 
             const user = await userConfig.model.findByPk(userId,{transaction:t});
 
@@ -54,7 +48,7 @@ class AccountService{
             await user.save({transaction:t});
 
             Logger.info("total balance updated");
-            //await commit(t);
+            
         }
         catch(error){
             Logger.error(error);

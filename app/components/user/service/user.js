@@ -10,7 +10,7 @@ const InvalidError = require("../../../errors/invalidError");
 class UserService{
 
     #associationMap = {
-        account : {
+        accounts : {
             model : accountConfig.model,
             required : true
         },
@@ -23,8 +23,8 @@ class UserService{
             includeQuery = [includeQuery];
         }
 
-        if(includeQuery?.includes(userConfig.association.account)){
-            associations.push(this.#associationMap.account);
+        if(includeQuery?.includes(userConfig.association.accounts)){
+            associations.push(this.#associationMap.accounts);
         }
         return associations;
     }
@@ -108,15 +108,17 @@ class UserService{
             if(includeQuery){
                 association = this.#createAssociations(includeQuery);
             }
-
-        
+            const filterResults = parseFilterQueries(query, userConfig.filters);
+            const finalWhere = {
+                ...filterResults.where,  
+                isAdmin: false        
+            };
             
             const arg = {
                 attributes: selectArray,
                 ...parseLimitAndOffset(query),
                 transaction: t,
-                ...parseFilterQueries(query, userConfig.filters),
-                
+                where:finalWhere,
                 include: association,
               };
 
@@ -221,6 +223,14 @@ class UserService{
         try {
           Logger.info("delete user by userId service started");
     
+          const accountCount = await accountConfig.model.count({
+            where: { userId: userId },
+            transaction: t
+                });
+
+          if(accountCount>0)
+            throw new InvalidError("The bank cannot be deleted because it has accounts associated with it.");     
+
           const isDeleted = await userConfig.model.destroy({
             where: { id: userId },
             transaction: t,
@@ -230,7 +240,7 @@ class UserService{
             throw new NotFoundError(`could not delete user`);
     
           await commit(t);
-          Logger.info("delete user by id service ended...");
+          Logger.info("delete user by id service completed");
           return isDeleted;
         } catch (error) {
           await rollBack(t);

@@ -28,8 +28,8 @@ class BankConfig{
     }
 
     this.association = {
-        account : "account",
-        ledger : "ledger"
+        accounts : "accounts",
+        ledgers : "ledgers"
     }
 
     this.filters = {

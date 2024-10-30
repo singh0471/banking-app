@@ -35,7 +35,7 @@ class PassbookConfig{
     }
 
     this.association = {
-        account : "account"
+        accounts : "accounts"
     }
 
     this.filters = {

@@ -31,9 +31,9 @@ class AccountConfig{
     }
 
     this.association = {
-        user : "user",
-        bank : "bank",
-        passbook : "passbook"
+        users : "users",
+        banks : "banks",
+        passbooks : "passbooks"
     }
 
     this.filters = {

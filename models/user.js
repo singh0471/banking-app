@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       users.hasMany(models.accounts,{
         foreignKey:"userId",
-        as:"account",
         onDelete:"CASCADE",
         hooks:true
       })

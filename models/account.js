@@ -13,21 +13,18 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       accounts.belongsTo(models.users,{
         foreignKey:"userId",
-        as : "user",
         onDelete:"CASCADE",
         hooks:true
       })
 
       accounts.belongsTo(models.banks,{
         foreignKey:"bankId",
-        as : "bank",
         onDelete:"CASCADE",
         hooks:true
       })
 
       accounts.hasMany(models.passbooks, {
         foreignKey:"account_number",
-        as:"passbook",
         onDelete:"CASCADE",
         hooks:true
       })

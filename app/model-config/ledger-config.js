@@ -28,7 +28,7 @@ class LedgerConfig{
     }
 
     this.association = {
-        bank : "bank"
+        banks : "banks"
     }
 
     this.filters = {
