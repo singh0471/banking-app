@@ -433,6 +433,33 @@ class AccountService{
         }
 
         try{
+            Logger.info("view passbook service started");
+            await this.#verifyUserAccount(userId,accountNumber,t);
+
+            let selectArray = parseSelectFields(query, userConfig.fieldMapping);
+            if (!selectArray) {
+              selectArray = Object.values(userConfig.fieldMapping);
+            }
+
+
+            const limitAndOffset = parseLimitAndOffset(query);
+        
+            
+            const whereClause = {
+                accountNumber: accountNumber,
+                ...limitAndOffset.where 
+            };
+            const arg = {
+                attributes: selectArray,
+                where: whereClause,
+                transaction: t,
+                
+              };
+
+              const { count, rows } = await userConfig.model.findAndCountAll(arg);
+              await commit(t);
+              Logger.info("view passbook service ended");
+              return { count, rows };
 
         }
         catch(error){

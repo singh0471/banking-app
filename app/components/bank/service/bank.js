@@ -249,6 +249,48 @@ class BankService{
             Logger.error(error);
         }
       }
+
+      async viewLedger(bankId,query,t){
+        if(!t){
+          t = await transaction();
+        }
+
+        try{
+          Logger.info("view passbook service started");
+          let selectArray = parseSelectFields(query, userConfig.fieldMapping);
+            if (!selectArray) {
+              selectArray = Object.values(userConfig.fieldMapping);
+            }
+
+
+            const limitAndOffset = parseLimitAndOffset(query);
+        
+            
+            const whereClause = {
+                bankId: bankId,
+                ...limitAndOffset.where 
+            };
+
+            const arg = {
+              attributes: selectArray,
+              where: whereClause,
+              transaction: t,
+              
+            };
+
+            const { count, rows } = await ledgerConfig.model.findAndCountAll(arg);
+              await commit(t);
+
+              Logger.info("view ledger service ended");
+              return { count, rows };
+
+
+        }
+        catch(error){
+          await rollBack(t);
+          Logger.error(error);
+        }
+      }
 }
 
 module.exports = BankService;

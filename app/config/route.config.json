@@ -190,6 +190,26 @@
                 "isAdmin" : false,
                 "isUser" : true,
                 "verifyUserId":true
+            },
+            {
+                "controller": "../components/account/controller/account.js",
+                "route": "/api/v1/user/:userId/account/:accountNumber/passbook",
+                "method": "get",
+                "action": "viewPassbook",
+                "secured": false,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
+            },
+            {
+                "controller": "../components/account/controller/account.js",
+                "route": "/api/v1/user/:userId/bank/:bankId/ledger",
+                "method": "get",
+                "action": "viewLedger",
+                "secured": false,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
             }
         
     ] 

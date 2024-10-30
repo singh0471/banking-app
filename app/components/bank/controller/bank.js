@@ -104,6 +104,27 @@ class BankController{
           next(error);
         }
       }
+
+      async viewPassbook(req,res,next){
+        try{
+          
+              Logger.info("view passbook controller started");
+              const {userId} = req.body;
+
+              if(!userId || !validateUUID(userId))
+                throw new InvalidError("invalid user id");
+            
+              const { count, rows } = await this.bankService.viewLedger(userId,req.query);
+              setXTotalCountHeader(res, count);
+              res.status(HttpStatusCode.Ok).json(rows);
+              Logger.info("view ledger controller completed");
+
+            }
+            
+        catch(error){
+          next(error);
+        }
+      }
 }
 
 const bankController = new BankController();
