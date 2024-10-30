@@ -36,7 +36,7 @@ class AccountService{
         try{
             Logger.info("update total balance started");
 
-            const totalBalance = await accountConfig.model.sum("accountBalance",{where:{userId}});
+            const totalBalance = await accountConfig.model.sum("accountBalance",{where:{userId:userId}});
 
             console.log(totalBalance);
 
@@ -51,7 +51,7 @@ class AccountService{
 
             user["totalBalance"] = totalBalance;
 
-            await user.save({t});
+            await user.save({transaction:t});
 
             Logger.info("total balance updated");
             //await commit(t);
@@ -115,15 +115,21 @@ class AccountService{
           if (includeQuery) {
             association = this.#createAssociations(includeQuery);
           }
+
+          const filterResults = parseFilterQueries(query, accountConfig.filters);
+
+          
+          const finalWhere = {
+              ...filterResults.where,  
+              userId: userId           
+          };
     
           const arg = {
             attributes: selectArray,
             ...parseLimitAndOffset(query),
             transaction: t,
-            where: {
-              userId: userId,
-            },
-            ...parseFilterQueries(query, accountConfig.filters),
+            where: finalWhere,
+            
             include: association,
           };
     
@@ -411,11 +417,11 @@ class AccountService{
             if(debitBankId!==creditBankId){
                 await this.#updateLedger(debitBankId,creditBankId,amount,t);
             }
-
-            await this.#updateTotalBalance(debitUserId,t);
-            await this.#updateTotalBalance(creditUserId,t);
-
             await commit(t);
+            await this.#updateTotalBalance(debitUserId);
+            await this.#updateTotalBalance(creditUserId);
+
+            
             
             Logger.info("transfer money service completed");
             return true;
@@ -436,27 +442,28 @@ class AccountService{
             Logger.info("view passbook service started");
             await this.#verifyUserAccount(userId,accountNumber,t);
 
-            let selectArray = parseSelectFields(query, userConfig.fieldMapping);
+            let selectArray = parseSelectFields(query, passbookConfig.fieldMapping);
             if (!selectArray) {
-              selectArray = Object.values(userConfig.fieldMapping);
+              selectArray = Object.values(passbookConfig.fieldMapping);
             }
 
 
-            const limitAndOffset = parseLimitAndOffset(query);
-        
-            
-            const whereClause = {
-                accountNumber: accountNumber,
-                ...limitAndOffset.where 
-            };
-            const arg = {
-                attributes: selectArray,
-                where: whereClause,
-                transaction: t,
-                
-              };
+            const filterResults = parseFilterQueries(query, passbookConfig.filters);
 
-              const { count, rows } = await userConfig.model.findAndCountAll(arg);
+          
+          const finalWhere = {
+              ...filterResults.where,  
+              accountNumber: accountNumber        
+          };
+    
+          const arg = {
+            attributes: selectArray,
+            ...parseLimitAndOffset(query),
+            transaction: t,
+            where: finalWhere
+          };
+
+              const { count, rows } = await passbookConfig.model.findAndCountAll(arg);
               await commit(t);
               Logger.info("view passbook service ended");
               return { count, rows };

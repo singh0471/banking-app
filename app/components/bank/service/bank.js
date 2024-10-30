@@ -257,26 +257,25 @@ class BankService{
 
         try{
           Logger.info("view passbook service started");
-          let selectArray = parseSelectFields(query, userConfig.fieldMapping);
+          let selectArray = parseSelectFields(query, ledgerConfig.fieldMapping);
             if (!selectArray) {
-              selectArray = Object.values(userConfig.fieldMapping);
+              selectArray = Object.values(ledgerConfig.fieldMapping);
             }
 
+            const filterResults = parseFilterQueries(query, ledgerConfig.filters);
 
-            const limitAndOffset = parseLimitAndOffset(query);
-        
-            
-            const whereClause = {
-                bankId: bankId,
-                ...limitAndOffset.where 
-            };
+          
+          const finalWhere = {
+              ...filterResults.where,  
+              bankId: bankId        
+          };
 
-            const arg = {
-              attributes: selectArray,
-              where: whereClause,
-              transaction: t,
-              
-            };
+          const arg = {
+            attributes: selectArray,
+            ...parseLimitAndOffset(query),
+            transaction: t,
+            where: finalWhere
+          };
 
             const { count, rows } = await ledgerConfig.model.findAndCountAll(arg);
               await commit(t);

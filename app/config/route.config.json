@@ -202,8 +202,8 @@
                 "verifyUserId":true
             },
             {
-                "controller": "../components/account/controller/account.js",
-                "route": "/api/v1/user/:userId/bank/:bankId/ledger",
+                "controller": "../components/bank/controller/bank.js",
+                "route": "/api/v1/bank/:bankId/ledger",
                 "method": "get",
                 "action": "viewLedger",
                 "secured": false,

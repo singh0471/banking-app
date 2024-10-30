@@ -188,11 +188,12 @@ class AccountController{
         try{
           
               Logger.info("view passbook controller started");
-              const {userId,accountNumber} = req.body;
-
+              const {userId,accountNumber} = req.params;
+              
               if(!userId || !validateUUID(userId))
                 throw new InvalidError("invalid user id");
-              if(!accountNumber || validateUUID(accountNumber))
+              
+              if(!accountNumber || !validateUUID(accountNumber))
                 throw new InvalidError("invalid account number");
               const { count, rows } = await this.accountService.viewPassbook(userId,accountNumber,req.query);
               setXTotalCountHeader(res, count);
