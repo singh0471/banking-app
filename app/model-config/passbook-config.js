@@ -18,9 +18,9 @@ class PassbookConfig{
         deletedAt : "deletedAt"
     }
     
-    this.model = db.passbooks
-    this.modelName = db.passbooks.name
-    this.tableName = db.passbooks.options.tableName
+    this.model = db.passbook
+    this.modelName = db.passbook.name
+    this.tableName = db.passbook.options.tableName
     
     this.columnMapping = {
         id:this.model.rawAttributes[this.fieldMapping.id].field,
@@ -35,7 +35,7 @@ class PassbookConfig{
     }
 
     this.association = {
-        accounts : "accounts"
+        account : "account"
     }
 
     this.filters = {

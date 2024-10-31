@@ -16,9 +16,9 @@ class AccountConfig{
         deletedAt : "deletedAt"
     }
 
-    this.model = db.accounts
-    this.modelName = db.accounts.name
-    this.tableName = db.accounts.options.tableName
+    this.model = db.account
+    this.modelName = db.account.name
+    this.tableName = db.account.options.tableName
    
     this.columnMapping = {
         accountNumber : this.model.rawAttributes[this.fieldMapping.accountNumber].field,
@@ -31,9 +31,9 @@ class AccountConfig{
     }
 
     this.association = {
-        users : "users",
-        banks : "banks",
-        passbooks : "passbooks"
+        user : "user",
+        bank : "bank",
+        passbook : "passbook"
     }
 
     this.filters = {

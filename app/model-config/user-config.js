@@ -18,9 +18,9 @@ class UserConfig{
         deletedAt : "deletedAt"
     }
 
-    this.model = db.users
-    this.modelName = db.users.name
-    this.tableName = db.users.options.tableName
+    this.model = db.user
+    this.modelName = db.user.name
+    this.tableName = db.user.options.tableName
 
     this.columnMapping = {
         id : this.model.rawAttributes[this.fieldMapping.id].field,

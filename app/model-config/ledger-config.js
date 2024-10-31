@@ -14,9 +14,9 @@ class LedgerConfig{
         deletedAt : "deletedAt"
     }
 
-    this.model = db.ledgers
-    this.modelName = db.ledgers.name
-    this.tableName = db.ledgers.options.tableName
+    this.model = db.ledger
+    this.modelName = db.ledger.name
+    this.tableName = db.ledger.options.tableName
     
     this.columnMapping = {
         bankId : this.model.rawAttributes[this.fieldMapping.bankId].field,
@@ -28,7 +28,7 @@ class LedgerConfig{
     }
 
     this.association = {
-        banks : "banks"
+        bank : "bank"
     }
 
     this.filters = {

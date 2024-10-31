@@ -11,7 +11,7 @@ const userConfig = require("../../../model-config/user-config");
 const {createUUID} = require("../../../utils/uuid");
 class AccountService{
     #associationMap = {
-        passbooks:{
+        passbook:{
             model:passbookConfig.model,
             require:true
         }
@@ -23,8 +23,8 @@ class AccountService{
         if(!Array.isArray(includeQuery))
             includeQuery = [includeQuery];
 
-        if(includeQuery?.includes(accountConfig.association.passbooks)){
-            associations.push(this.#associationMap.passbooks);
+        if(includeQuery?.includes(accountConfig.association.passbook)){
+            associations.push(this.#associationMap.passbook);
         }
         return associations;
     }

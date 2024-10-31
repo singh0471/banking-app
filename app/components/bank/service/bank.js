@@ -14,7 +14,7 @@ class BankService{
             model : accountConfig.model,
             required : true
         },
-        ledgers : {
+        ledger : {
             model:ledgerConfig.model,
             required:true
         },
@@ -31,8 +31,8 @@ class BankService{
         if(includeQuery?.includes(bankConfig.association.accounts)){
             association.push(this.#associationMap.accounts);
         }
-        if(includeQuery?.includes(bankConfig.association.ledgers)){
-            association.push(this.#associationMap.ledgers);
+        if(includeQuery?.includes(bankConfig.association.ledger)){
+            association.push(this.#associationMap.ledger);
         }
         return association;
 
