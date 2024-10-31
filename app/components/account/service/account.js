@@ -426,50 +426,6 @@ class AccountService{
         }
       }
 
-
-      async viewPassbook(userId,accountNumber,query,t){
-        if(!t){
-            t = await transaction();
-        }
-
-        try{
-            Logger.info("view passbook service started");
-            await this.#verifyUserAccount(userId,accountNumber,t);
-
-            let selectArray = parseSelectFields(query, passbookConfig.fieldMapping);
-            if (!selectArray) {
-              selectArray = Object.values(passbookConfig.fieldMapping);
-            }
-
-
-            const filterResults = parseFilterQueries(query, passbookConfig.filters);
-
-          
-          const finalWhere = {
-              ...filterResults.where,  
-              accountNumber: accountNumber        
-          };
-    
-          const arg = {
-            attributes: selectArray,
-            ...parseLimitAndOffset(query),
-            transaction: t,
-            where: finalWhere
-          };
-
-              const { count, rows } = await passbookConfig.model.findAndCountAll(arg);
-              await commit(t);
-              Logger.info("view passbook service ended");
-              return { count, rows };
-
-        }
-        catch(error){
-            await rollBack(t);
-            Logger.error(error);
-        }
-      }
-
-
 }
 
 module.exports = AccountService;

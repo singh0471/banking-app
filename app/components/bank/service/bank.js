@@ -250,46 +250,6 @@ class BankService{
         }
       }
 
-      async viewLedger(bankId,query,t){
-        if(!t){
-          t = await transaction();
-        }
-
-        try{
-          Logger.info("view passbook service started");
-          let selectArray = parseSelectFields(query, ledgerConfig.fieldMapping);
-            if (!selectArray) {
-              selectArray = Object.values(ledgerConfig.fieldMapping);
-            }
-
-            const filterResults = parseFilterQueries(query, ledgerConfig.filters);
-
-          
-          const finalWhere = {
-              ...filterResults.where,  
-              bankId: bankId        
-          };
-
-          const arg = {
-            attributes: selectArray,
-            ...parseLimitAndOffset(query),
-            transaction: t,
-            where: finalWhere
-          };
-
-            const { count, rows } = await ledgerConfig.model.findAndCountAll(arg);
-              await commit(t);
-
-              Logger.info("view ledger service ended");
-              return { count, rows };
-
-
-        }
-        catch(error){
-          await rollBack(t);
-          Logger.error(error);
-        }
-      }
 }
 
 module.exports = BankService;

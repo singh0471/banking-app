@@ -6,7 +6,7 @@
                 "route": "/api/v1/user/login",
                 "method": "get",
                 "action": "login",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : false,
                 "isUser" : false,
                 "verifyUserId":false
@@ -16,7 +16,7 @@
                 "route": "/api/v1/user/createAdmin",
                 "method": "post",
                 "action": "createAdmin",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : false,
                 "isUser" : false,
                 "verifyUserId":false
@@ -26,7 +26,7 @@
                 "route": "/api/v1/user/createUser",
                 "method": "post",
                 "action": "createUser",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
@@ -36,7 +36,7 @@
                 "route": "/api/v1/user/getAll",
                 "method": "get",
                 "action": "getAllUsers",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
@@ -46,7 +46,7 @@
                 "route": "/api/v1/user/:userId",
                 "method": "get",
                 "action": "getUserByUserId",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
@@ -56,7 +56,7 @@
                 "route": "/api/v1/user/:userId",
                 "method": "put",
                 "action": "updateUserByUserId",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
@@ -66,7 +66,7 @@
                 "route": "/api/v1/user/:userId",
                 "method": "delete",
                 "action": "deleteUserByUserId",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
@@ -76,7 +76,7 @@
                 "route": "/api/v1/bank/create",
                 "method": "post",
                 "action": "createBank",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
@@ -86,7 +86,7 @@
                 "route": "/api/v1/bank",
                 "method": "get",
                 "action": "getAllBanks",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
@@ -96,7 +96,7 @@
                 "route": "/api/v1/bank/:bankId",
                 "method": "get",
                 "action": "getBankByBankId",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
@@ -106,7 +106,7 @@
                 "route": "/api/v1/bank/:bankId",
                 "method": "put",
                 "action": "updateBankByBankId",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
@@ -116,7 +116,7 @@
                 "route": "/api/v1/bank/:bankId",
                 "method": "delete",
                 "action": "deleteBankByBankId",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
@@ -126,7 +126,7 @@
                 "route": "/api/v1/user/:userId/account",
                 "method": "post",
                 "action": "createAccount",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : false,
                 "isUser" : true,
                 "verifyUserId":true
@@ -136,7 +136,7 @@
                 "route": "/api/v1/user/:userId/account",
                 "method": "get",
                 "action": "getAllAccounts",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : false,
                 "isUser" : true,
                 "verifyUserId":true
@@ -146,7 +146,7 @@
                 "route": "/api/v1/user/:userId/account/:accountNumber",
                 "method": "get",
                 "action": "getAccountByAccountNumber",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : false,
                 "isUser" : true,
                 "verifyUserId":true
@@ -156,7 +156,7 @@
                 "route": "/api/v1/user/:userId/account/:accountNumber",
                 "method": "delete",
                 "action": "deleteAccountByAccountNumber",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : false,
                 "isUser" : true,
                 "verifyUserId":true
@@ -166,7 +166,7 @@
                 "route": "/api/v1/user/:userId/account/:accountNumber/deposit",
                 "method": "put",
                 "action": "deposit",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : false,
                 "isUser" : true,
                 "verifyUserId":true
@@ -176,7 +176,7 @@
                 "route": "/api/v1/user/:userId/account/:accountNumber/withdraw",
                 "method": "put",
                 "action": "withdraw",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : false,
                 "isUser" : true,
                 "verifyUserId":true
@@ -186,30 +186,50 @@
                 "route": "/api/v1/user/:userId/account/:accountNumber/transfer",
                 "method": "put",
                 "action": "transferMoney",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : false,
                 "isUser" : true,
                 "verifyUserId":true
             },
             {
-                "controller": "../components/account/controller/account.js",
+                "controller": "../components/passbook/controller/passbook.js",
                 "route": "/api/v1/user/:userId/account/:accountNumber/passbook",
                 "method": "get",
                 "action": "viewPassbook",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : false,
                 "isUser" : true,
                 "verifyUserId":true
             },
             {
-                "controller": "../components/bank/controller/bank.js",
+                "controller": "../components/ledger/controller/ledger.js",
                 "route": "/api/v1/bank/:bankId/ledger",
                 "method": "get",
                 "action": "viewLedger",
-                "secured": false,
+                "secured": true,
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
+            },
+            {
+                "controller": "../components/ledger/controller/ledger.js",
+                "route": "/api/v1/bank/:bankId/ledger/:anotherBankId",
+                "method": "get",
+                "action": "viewLedgerByBankId",
+                "secured": true,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/passbook/controller/passbook.js",
+                "route": "/api/v1/user/:userId/account/:accountNumber/transaction/:transactionId",
+                "method": "get",
+                "action": "getTransactionDetailByTransactionId",
+                "secured": true,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
             }
         
     ] 

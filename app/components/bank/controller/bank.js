@@ -104,27 +104,6 @@ class BankController{
           next(error);
         }
       }
-
-      async viewLedger(req,res,next){
-        try{
-          
-              Logger.info("view ledger controller started");
-              const {bankId} = req.params;
-
-              if(!bankId || !validateUUID(bankId))
-                throw new InvalidError("invalid user id");
-            
-              const { count, rows } = await this.bankService.viewLedger(bankId,req.query);
-              setXTotalCountHeader(res, count);
-              res.status(HttpStatusCode.Ok).json(rows);
-              Logger.info("view ledger controller completed");
-
-            }
-            
-        catch(error){
-          next(error);
-        }
-      }
 }
 
 const bankController = new BankController();

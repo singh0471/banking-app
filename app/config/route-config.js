@@ -1,5 +1,5 @@
 const NotFoundError = require("../errors/notFoundError");
-const checkJwtHS256 = require("../middleware/authService");
+const {checkJwtHS256} = require("../middleware/authService");
 
 const {
   Payload,
