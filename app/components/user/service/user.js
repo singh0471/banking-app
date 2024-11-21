@@ -1,5 +1,6 @@
 const { where, Op } = require("sequelize");
 const userConfig = require("../../../model-config/user-config");
+const kycConfig = require("../../../model-config/kyc-config");
 const {transaction,rollBack,commit} = require("../../../utils/transaction");
 const { parseSelectFields, parseLimitAndOffset, parseFilterQueries } = require("../../../utils/request");
 const accountConfig = require("../../../model-config/account-config");
@@ -7,6 +8,8 @@ const Logger = require("../../../utils/logger");
 const bcrypt = require("bcrypt");
 const NotFoundError = require("../../../errors/notFoundError");
 const InvalidError = require("../../../errors/invalidError");
+const sendEmail = require("../../../utils/email");
+const { createUUID } = require("../../../utils/uuid");
 class UserService{
 
     #associationMap = {
@@ -14,6 +17,10 @@ class UserService{
             model : accountConfig.model,
             required : true
         },
+        kyc :{
+            model:kycConfig.model,
+            required:true
+        }
     };
 
     #createAssociations(includeQuery){
@@ -25,6 +32,9 @@ class UserService{
 
         if(includeQuery?.includes(userConfig.association.accounts)){
             associations.push(this.#associationMap.accounts);
+        }
+        if(includeQuery?.includes(userConfig.association.kyc)){
+            associations.push(this.#associationMap.kyc);
         }
         return associations;
     }
@@ -59,7 +69,7 @@ class UserService{
 
 
 
-    async createUser(id,username,password,firstName,lastName,isAdmin,t){
+    async createUser(id,username,email,password,firstName,lastName,dateOfBirth,isAdmin,t){
             if(!t){
                 t = await transaction();
             }
@@ -71,14 +81,17 @@ class UserService{
                 console.log(hashedPassword);
                 let response = await userConfig.model.create(
                     {
-                        id, username,password:hashedPassword,firstName,lastName,isAdmin,totalBalance
+                        id, username,email,password:hashedPassword,firstName,lastName,dateOfBirth,isAdmin,totalBalance
                     },
                     {t}
                 )
-                
-
+                console.log("hello word");
+                if(!isAdmin){
+                await kycConfig.model.create({id:createUUID(),userId:id},{transaction:t});}
                 await commit(t);
                 Logger.info("create user completed");
+                
+                await sendEmail(email,"Registration successful",`Hi ${firstName}! your registration has been successful. you username is - ${username} and password is - ${password}. please visit localhost:3000 to login.`)
                 return response;
 
             }
@@ -177,43 +190,70 @@ class UserService{
         }
     }
 
-    async updateUserByUserId(userId, parameter, value, t) {
+    async updateUserByUserId(userId, updates, t) {
         if (!t) {
-          t = await transaction();
+            t = await transaction();
         }
         try {
-          Logger.info("update user by user id service started");
-
-          if (!Object.keys(userConfig.fieldMapping).includes(parameter)) {
-            throw new InvalidError("invalid parameter entered");
-        }
-
-          if(parameter==="username"){
-            const user = await this.getUserByUsername(value);
-            if(user){
-                throw new InvalidError("username already exists");
+            Logger.info("update user by user id service started");
+    
+            const user = await userConfig.model.findByPk(userId, { transaction: t });
+    
+            if (!user) {
+                throw new NotFoundError(`User with id ${userId} does not exist.`);
             }
-          }
     
-          const user = await userConfig.model.findByPk(userId, { transaction: t });
+            const updatedDetails = [];  
     
-          if (!user) {
-            throw new NotFoundError(`User with id ${userId} does not exist.`);
-          }
+            for (const { parameter, value } of updates) {
+                if (!Object.keys(userConfig.fieldMapping).includes(parameter)) {
+                    throw new InvalidError(`Invalid parameter: ${parameter}`);
+                }
     
-          user[parameter] = value;
+                if (parameter === "username") {
+                    const existingUser = await this.getUserByUsername(value);
+                    if (existingUser) {
+                        throw new InvalidError("Username already exists");
+                    }
+                }
     
-          await user.save({ transaction: t });
+                if (parameter === "password") {
+                    user[parameter] = await bcrypt.hash(value, 10);
+                } else {
+                    user[parameter] = value;
+                }
     
-          commit(t);
-          Logger.info("update user by user id service completed");
-          return user;
+                 
+                updatedDetails.push(`${parameter}: ${value}`);
+            }
+    
+            await user.save({ transaction: t });
+            commit(t);
+    
+           
+            const emailMessage = `
+                Hi ${user.firstName}, 
+                
+                Your account has been successfully updated. Here are the updated details:
+    
+                ${updatedDetails.join('\n')}
+    
+                Please visit localhost:3000 to view your account.
+            `;
+    
+            
+            await sendEmail(user.email, "Account Update Notification", emailMessage);
+    
+            Logger.info("update user by user id service completed");
+            return user;
         } catch (error) {
-          await rollBack(t);
-          Logger.error(error);
-          throw error;
+            await rollBack(t);
+            Logger.error(error);
+            throw error;
         }
     }
+    
+    
 
     async deleteUserByUserId(userId, t) {
         if (!t) {
@@ -229,7 +269,14 @@ class UserService{
                 });
 
           if(accountCount>0)
-            throw new InvalidError("The bank cannot be deleted because it has accounts associated with it.");     
+            throw new InvalidError("The bank cannot be deleted because it has accounts associated with it.");
+        
+          const user = await userConfig.model.findOne({
+            where: {id:userId},
+            transaction:t,
+          });
+
+          const email = user['email'];
 
           const isDeleted = await userConfig.model.destroy({
             where: { id: userId },
@@ -241,6 +288,7 @@ class UserService{
     
           await commit(t);
           Logger.info("delete user by id service completed");
+          sendEmail(email,"Account Deleted",`Hi! ${user.firstName}! your Central Bank account has been deleted sucessfully`);
           return isDeleted;
         } catch (error) {
           await rollBack(t);

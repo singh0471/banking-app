@@ -47,14 +47,15 @@ class Payload{
 const verifyAdmin = (req,res,next) => {
     try{
         Logger.info("verifying admin");
-
-        if(!req.cookies["auth"] || !req.cookies["auth"])
+        console.log(req.headers['auth'])
+        if(!req.cookies["auth"] && !req.headers["auth"])
             throw new NotFoundError("cookie not found");
 
-        const token = req.cookies["auth"].split(" ")[2];
-
-        const payload = Payload.verifyToken(token);
+        const token = req.headers["auth"].split(" ")[1]; // here i have changed from 2 to 1.
         
+        
+        const payload = Payload.verifyToken(token);
+       
         if(!payload.isAdmin)
             throw new UnauthorizedError("Admin verification failed");
 
@@ -70,10 +71,10 @@ const verifyUser = (req,res,next) => {
     try{
         Logger.info("verifying user");
 
-        if(!req.cookies["auth"] || !req.cookies["auth"])
+        if(!req.cookies["auth"] && !req.headers["auth"])
             throw new NotFoundError("cookie not found");
 
-        const token = req.cookies["auth"].split(" ")[2];
+        const token = req.headers["auth"].split(" ")[1];  
 
         const payload = Payload.verifyToken(token);
         req.user = payload.userId;

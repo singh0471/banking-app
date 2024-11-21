@@ -103,12 +103,12 @@ class AccountController{
             throw new InvalidError("invalid user id")
           if(!validateUUID(accountNumber))
             throw new InvalidError("invalid account number");
-
-          const {amount} = req.body;
-
+          
+          let {amount} = req.body;
+          amount = Number(amount)
           if(!isPositiveInteger(amount))
-            throw InvalidError("invalid amount entered");
-
+            throw new InvalidError("invalid amount entered");
+          
           const isDeposited = await this.accountService.deposit(userId,accountNumber,amount);
 
           if(!isDeposited)
@@ -133,10 +133,10 @@ class AccountController{
           if(!validateUUID(accountNumber))
             throw new InvalidError("invalid account number");
 
-          const {amount} = req.body;
-
+          let {amount} = req.body;
+          amount = Number(amount);
           if(!isPositiveInteger(amount))
-            throw InvalidError("invalid amount entered");
+            throw new InvalidError("invalid amount entered");
 
           const isWithdrawn = await this.accountService.withdraw(userId,accountNumber,amount);
 
@@ -161,8 +161,8 @@ class AccountController{
           if(!validateUUID(accountNumber))
             throw new InvalidError("invalid account number");
 
-          const {accountNo,amount} = req.body;
-
+          let {accountNo,amount} = req.body;
+          amount = Number(amount);
           if(!validateUUID(accountNo))
             throw new InvalidError("invalid account no");
 

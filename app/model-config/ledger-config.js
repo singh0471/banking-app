@@ -7,7 +7,9 @@ class LedgerConfig{
 
     this.fieldMapping = {
         bankId:"bankId",
+        bankName:"bankName",
         anotherBankId:"anotherBankId",
+        anotherBankName : "anotherBankName",
         netBalance:"netBalance",
         createdAt :"createdAt",
         updatedAt : "updatedAt",
@@ -20,7 +22,9 @@ class LedgerConfig{
     
     this.columnMapping = {
         bankId : this.model.rawAttributes[this.fieldMapping.bankId].field,
+        bankName : this.model.rawAttributes[this.fieldMapping.bankName].field,
         anotherBankId : this.model.rawAttributes[this.fieldMapping.anotherBankId].field,
+        anotherBankName : this.model.rawAttributes[this.fieldMapping.anotherBankName].field,
         netBalance : this.model.rawAttributes[this.fieldMapping.netBalance].field,
         createdAt : this.model.rawAttributes[this.fieldMapping.createdAt].field,
         updatedAt : this.model.rawAttributes[this.fieldMapping.updatedAt].field,
@@ -40,11 +44,25 @@ class LedgerConfig{
                 }
             }
         },
+        bankName : (val) => {
+            return {
+                [`${this.columnMapping.bankName}`] : {
+                    [Op.like] : `%${val}%`
+                }
+            }
+        },
         anotherBankId : (val) => {
             validateUUID(val);
             return {
                 [`${this.columnMapping.anotherBankId}`]: {
                     [Op.eq] : val
+                }
+            }
+        },
+        anotherBankName : (val) => {
+            return {
+                [`${this.columnMapping.anotherBankName}`] : {
+                    [Op.like] : `%${val}%`
                 }
             }
         },

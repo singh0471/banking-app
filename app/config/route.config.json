@@ -4,7 +4,7 @@
             {
                 "controller": "../components/user/controller/user.js",
                 "route": "/api/v1/user/login",
-                "method": "get",
+                "method": "post",
                 "action": "login",
                 "secured": true,
                 "isAdmin" : false,
@@ -90,6 +90,16 @@
                 "isAdmin" : true,
                 "isUser" : false,
                 "verifyUserId":false
+            },
+            {
+                "controller": "../components/bank/controller/bank.js",
+                "route": "/api/v1/user/:userId/getAllBanks",
+                "method": "get",
+                "action": "getAllBanksForUsers",
+                "secured": true,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
             },
             {
                 "controller": "../components/bank/controller/bank.js",
@@ -230,6 +240,46 @@
                 "isAdmin" : false,
                 "isUser" : true,
                 "verifyUserId":true
+            },
+            {
+                "controller": "../components/kyc/controller/kyc.js",
+                "route": "/api/v1/user/:userId/kyc",
+                "method": "get",
+                "action": "getUserKYC",
+                "secured": true,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
+            },
+            {
+                "controller": "../components/kyc/controller/kyc.js",
+                "route": "/api/v1/user/:userId/kyc",
+                "method": "put",
+                "action": "submitKYC",
+                "secured": true,
+                "isAdmin" : false,
+                "isUser" : true,
+                "verifyUserId":true
+            },
+            {
+                "controller": "../components/kyc/controller/kyc.js",
+                "route": "/api/v1/kyc-request",
+                "method": "get",
+                "action": "getSubmittedKYCs",
+                "secured": true,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
+            },
+            {
+                "controller": "../components/kyc/controller/kyc.js",
+                "route": "/api/v1/kyc-request",
+                "method": "put",
+                "action": "updateKYCStatus",
+                "secured": true,
+                "isAdmin" : true,
+                "isUser" : false,
+                "verifyUserId":false
             }
         
     ] 

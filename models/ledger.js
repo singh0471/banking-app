@@ -16,18 +16,23 @@ module.exports = (sequelize, DataTypes) => {
         onDelete:"CASCADE",
         hooks:true
       })
+
     }
+    
   }
   ledger.init({
     bankId: {
       type: DataTypes.UUID,
       primaryKey: true
     },
+    bankName:DataTypes.STRING,
+    
 
     anotherBankId: {
       type: DataTypes.UUID,
       primaryKey: true
     },
+    anotherBankName: DataTypes.STRING,
     netBalance: DataTypes.INTEGER
   }, {
     sequelize,

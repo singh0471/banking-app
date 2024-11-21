@@ -123,6 +123,8 @@ class RouteConfig {
       });
     }
 
+   
+
     if (isAdmin) {
       application.route(route)[method]((req, res, next) => {
         verifyAdmin(req, res, next);

@@ -7,6 +7,7 @@ const { parseSelectFields,parseLimitAndOffset,parseFilterQueries} = require("../
 const {rollBack,transaction,commit} = require("../../../utils/transaction");
 const NotFoundError = require("../../../errors/notFoundError");
 const InvalidError = require("../../../errors/invalidError");
+const { where } = require("sequelize");
 
 class BankService{
     #associationMap = {
@@ -38,32 +39,36 @@ class BankService{
 
     }
 
-    async #createLedger(id,t){
+    async #createLedger(id,name,t){
         try{
           Logger.info("create ledger service started");
           const existingBanks = await bankConfig.model.findAll({
-            attributes:["id"],
+            attributes:["id",'name'],
             transaction:t
           })
 
 
           for(let bank of existingBanks){
             const existingBankId = bank.id;
-            
+            const existingBankName = bank.name;
             if (id === existingBankId) {
               continue; 
               }
 
             await ledgerConfig.model.create({
               bankId:id,
+              bankName:name,
               anotherBankId:existingBankId,
+              anotherBankName: existingBankName,
               netBalance:0
             },{transaction:t})
 
 
             await ledgerConfig.model.create({
               bankId:existingBankId,
+              bankName : existingBankName,
               anotherBankId:id,
+              anotherBankName:name,
               netBalance:0
             },{transaction:t})
 
@@ -80,29 +85,63 @@ class BankService{
     
 
 
-    async createBank(id,name,abbreviation,t){
-        if(!t){
-            t = await transaction();
-        }
+    // async createBank(id,name,abbreviation,t){
+    //     if(!t){
+    //         t = await transaction();
+    //     }
 
-        try{
-            Logger.info("create bank service started");
+    //     try{
+    //         Logger.info("create bank service started");
             
 
-            const response = await bankConfig.model.create({id,name,abbreviation},{t});
+    //         const response = await bankConfig.model.create({id,name,abbreviation},{t});
 
-            const createLedger = await this.#createLedger(id,t);
-            if(!createLedger)
-              throw new NotFoundError("could not create ledger");
-            await commit(t);
-            Logger.info("create bank service completed");
-            return response;
-        }
-        catch(error){
-            await rollBack(t);
-            Logger.error(error);
-        }
-    }
+    //         const createLedger = await this.#createLedger(id,name,t);
+    //         if(!createLedger)
+    //           throw new NotFoundError("could not create ledger");
+    //         await commit(t);
+    //         Logger.info("create bank service completed");
+    //         return response;
+    //     }
+    //     catch(error){
+    //         await rollBack(t);
+    //         Logger.error(error);
+    //     }
+    // }
+
+    async createBank(id, name, abbreviation, t) {
+      if (!t) {
+          t = await transaction();
+      }
+  
+      try {
+          Logger.info("create bank service started");
+  
+          const response = await bankConfig.model.create(
+              { id, name, abbreviation },
+              { transaction: t }  
+          );
+  
+          const createLedger = await this.#createLedger(id, name, t);
+          if (!createLedger) throw new NotFoundError("Could not create ledger");
+  
+          await commit(t);
+          Logger.info("create bank service completed");
+          return response;
+      } catch (error) {
+          await rollBack(t);
+          Logger.error(error);
+  
+          
+          if (error.name === "SequelizeUniqueConstraintError") {
+              throw new InvalidError("Bank name or abbreviation already exists.");
+          }
+  
+           
+          throw error;
+      }
+  }
+  
 
 
     async getAllBanks(query,t){
@@ -143,6 +182,46 @@ class BankService{
         }
     }
 
+    async getAllBanksForUsers(query,t){
+      if(!t){
+          t = await transaction();
+      }
+
+      try{
+
+      Logger.info("get all banks service started");
+
+      let selectArray = parseSelectFields(query, bankConfig.fieldMapping);
+      if (!selectArray) {
+        selectArray = Object.values(bankConfig.fieldMapping);
+      }
+
+      const includeQuery = query.include || [];
+      let association = [];
+      if (includeQuery) {
+        association = this.#createAssociations(includeQuery);
+      }
+
+      const arg = {
+        attributes: selectArray,
+        ...parseLimitAndOffset(query),
+        transaction: t,
+        ...parseFilterQueries(query, bankConfig.filters),
+        include: association,
+      };
+
+      const { count, rows } = await bankConfig.model.findAndCountAll(arg);
+      await commit(t);
+      Logger.info("get all banks service completed");
+      return { count, rows };}
+      catch(error){
+          await rollBack(t);
+          Logger.error(error);
+      }
+  }
+
+   
+
     async getBankByBankId(bankId,query,t){
         if(!t){
             t = await transaction();
@@ -181,28 +260,70 @@ class BankService{
         }
     }
 
-    async updateBankByBankId(bankId, parameter, value, t) {
-        if (!t) {
+    async updateBankByBankId(bankId, updates, t) {
+      if (!t) {
           t = await transaction();
-        }
-    
-        try {
+      }
+  
+      try {
           Logger.info("update bank by id service started");
           const bank = await bankConfig.model.findByPk(bankId, { transaction: t });
-          if (!bank)
-            throw new NotFoundError(`could not found bank with bank id ${bankId}`);
-    
-          bank[parameter] = value;
+  
+          if (!bank) {
+              throw new NotFoundError(`Could not find bank with id ${bankId}`);
+          }
+  
+           
+          for (const { parameter, value } of updates) {
+              if (!parameter || typeof parameter !== "string") {
+                  throw new InvalidError(`Invalid parameter: ${parameter}`);
+              }
+              if (value === undefined || value === null) {
+                  throw new InvalidError(`Invalid value for parameter: ${parameter}`);
+              }
+  
+               
+              if (parameter === 'name') {
+                  const existingBanks = await bankConfig.model.findAll({
+                      where: { name: value },
+                      transaction: t,
+                  });
+  
+                  if (existingBanks.length > 0) {
+                      throw new InvalidError("Bank Name already exists");
+                  }
+              }
+  
+              
+              if (parameter === 'abbreviation') {
+                  const existingAbbreviations = await bankConfig.model.findAll({
+                      where: { abbreviation: value },
+                      transaction: t,
+                  });
+  
+                  if (existingAbbreviations.length > 0) {
+                      throw new InvalidError("Bank Abbreviation already exists");
+                  }
+              }
+  
+               
+              bank[parameter] = value;
+          }
+  
+           
           await bank.save({ transaction: t });
-    
           await commit(t);
+  
           Logger.info("update bank by id service completed");
           return bank;
-        } catch (error) {
-            await rollBack(t);
+      } catch (error) {
+          await rollBack(t);
           Logger.error(error);
-        }
+          throw error;
       }
+  }
+  
+  
 
       async deleteBankByBankId(bankId, t) {
         if (!t) {
@@ -239,6 +360,23 @@ class BankService{
           if (isDeleted === 0)
             throw new NotFoundError(`Bank with id ${bankId} does not exist`);
     
+          await ledgerConfig.model.destroy(
+            {
+              where: {
+                bankId:bankId
+              },
+            },
+            {transaction:t,}
+          );
+
+          await ledgerConfig.model.destroy(
+            {
+              where: {
+                anotherBankId:bankId
+              },
+            },
+            {transaction:t,}
+          );
          
           await commit(t);
           Logger.info("delete bank service completed");

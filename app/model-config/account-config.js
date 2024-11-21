@@ -11,6 +11,7 @@ class AccountConfig{
         accountBalance:"accountBalance",
         userId:"userId",
         bankId : "bankId",
+        bankName : "bankName",
         createdAt :"createdAt",
         updatedAt : "updatedAt",
         deletedAt : "deletedAt"
@@ -25,6 +26,7 @@ class AccountConfig{
         accountBalance : this.model.rawAttributes[this.fieldMapping.accountBalance].field,
         userId : this.model.rawAttributes[this.fieldMapping.userId].field,
         bankId : this.model.rawAttributes[this.fieldMapping.bankId].field,
+        bankName : this.model.rawAttributes[this.fieldMapping.bankName].field,
         createdAt : this.model.rawAttributes[this.fieldMapping.createdAt].field,
         updatedAt : this.model.rawAttributes[this.fieldMapping.updatedAt].field,
         deletedAt : this.model.rawAttributes[this.fieldMapping.deletedAt].field
@@ -68,10 +70,17 @@ class AccountConfig{
                     [Op.eq] : val
                 }
             }
-        }
+        },
+        bankName : (val) => {
+            return {
+                [`${this.columnMapping.bankName}`] : {
+                    [Op.like] : `%${val}%`
+                }
+            }
+        }}
     }
 
-}
+
 }
 
 const accountConfig = new AccountConfig();

@@ -16,13 +16,23 @@ module.exports = (sequelize, DataTypes) => {
         onDelete:"CASCADE",
         hooks:true
       })
+
+      user.hasOne(models.kyc,{
+        foreignKey:"userId",
+        onDelete:"CASCADE",
+        onUpdate:"CASCADE",
+        hooks:true
+      })
+
     }
   }
   user.init({
     username: DataTypes.STRING,
+    email:DataTypes.STRING,
     password: DataTypes.STRING,
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING,
+    dateOfBirth:DataTypes.DATEONLY,
     isAdmin : DataTypes.BOOLEAN,
     totalBalance: DataTypes.INTEGER
   }, {

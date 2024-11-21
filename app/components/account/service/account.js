@@ -7,8 +7,12 @@ const {parseSelectFields,parseLimitAndOffset,parseFilterQueries} = require("../.
 const Logger = require("../../../utils/logger");
 const NotFoundError = require("../../../errors/notFoundError");
 const InvalidError = require("../../../errors/invalidError");
+const UnauthorizedError = require("../../../errors/unauthorizedError");
 const userConfig = require("../../../model-config/user-config");
+const kycConfig = require("../../../model-config/kyc-config");
 const {createUUID} = require("../../../utils/uuid");
+const sendEmail = require("../../../utils/email");
+
 class AccountService{
     #associationMap = {
         passbook:{
@@ -62,28 +66,34 @@ class AccountService{
 
         try{
             Logger.info("create account service started");
-            // validating bank with id.
-            const bank = await bankConfig.model.findOne(
-                {
-                    where:{
-                        id:bankId
-                    }
-                }
-            )
+             
+            const bank = await bankConfig.model.findByPk(bankId,{transaction:t});
             if(!bank)
                 throw NotFoundError("bank does not exist");
 
             const accountBalance = 1000;
 
+            const kyc = await kycConfig.model.findOne({
+              where: { userId: userId },
+              transaction: t,
+          });
+
+            if(kyc.status!=='approved'){
+              throw new UnauthorizedError("You cannot create account because your KYC is not completed");
+            }
+            const bankName = bank.name;
             const account = await accountConfig.model.create(
                 {
-                    accountNumber,accountBalance,userId,bankId
+                    accountNumber,accountBalance,userId,bankId,bankName
                 },{t}
             );
             this.#updateTotalBalance(userId,t);
+            const userObj = await userConfig.model.findByPk(userId, {transaction:t});
+             await this.#createPassbookEntry(accountNumber,null,'deposit',1000,t);
             await commit(t);
             
             Logger.info("create account service completed");
+            await sendEmail(userObj.email,"Account Created", `Hi! ${userObj.firstName}! Your account has been successfully created in ${bank.name}. your account number is - ${accountNumber}`)
             return account;
         }
         catch(error){
@@ -187,7 +197,7 @@ class AccountService{
           if (!account) {
             throw new NotFoundError(`account with account number ${accountNumber} does not exists`);
           }
-          
+         
           const accountBalance = account["accountBalance"];
           console.log(accountBalance);
 
@@ -205,8 +215,11 @@ class AccountService{
           if (isDeleted === 0)
             throw new NotFoundError(`could not delete Account with account number ${accountNumber} `);
           this.#updateTotalBalance(userId,t);
+          const user = await userConfig.model.findByPk(userId, {transaction:t});
+          await sendEmail(user.email,"Account Deleted" , `Hi ${user.firstName}! you account number ${accountNumber} has been deleted successfully`);
           await commit(t);
           Logger.info("delete account by id service completed");
+           
           
           return isDeleted;
         } catch (error) {
@@ -257,8 +270,9 @@ class AccountService{
                     throw new NotFoundError("could not enter the details in passbook");
                 
                 await this.#updateTotalBalance(userId,t);
+                const user = await userConfig.model.findByPk(userId,{transaction:t});
                 await commit(t);
-
+                await sendEmail(user.email,"Amount Deposited", `Hi ${user.firstName}! RS. ${amount} has been successfully deposited in your account number ${accountNumber}.`);
                 Logger.info("deposit service completed");
                 return true;
 
@@ -296,8 +310,9 @@ class AccountService{
                 throw new NotFoundError("could not enter the details in passbook");
 
                 await this.#updateTotalBalance(userId,t);
+                const user = await userConfig.model.findByPk(userId,{transaction:t});
                 await commit(t);
-
+                await sendEmail(user.email,"Amount Withdrawn", `Hi ${user.firstName}! RS. ${amount} has been successfully withdrawn in your account number ${accountNumber}.`);
                 Logger.info("withdraw service completed");
                 return true;
         }
@@ -411,12 +426,16 @@ class AccountService{
             if(debitBankId!==creditBankId){
                 await this.#updateLedger(debitBankId,creditBankId,amount,t);
             }
-            await commit(t);
+           
             await this.#updateTotalBalance(debitUserId);
             await this.#updateTotalBalance(creditUserId);
+            
+            const debitUser = await userConfig.model.findByPk(debitUserId,{transaction:t});
+            const creditUser = await userConfig.model.findByPk(creditUserId,{transaction:t});
 
-            
-            
+            await sendEmail(debitUser.email,"Amount Debited",`Hi ${debitUser.firstName}! RS ${amount} has been debited from you account number ${debitAccountNumber}.`);
+            await sendEmail(debitUser.email,"Amount Credited",`Hi ${creditUser.firstName}! RS ${amount} has been credited from you account number ${creditAccountNumber}.`);
+            await commit(t);
             Logger.info("transfer money service completed");
             return true;
         }

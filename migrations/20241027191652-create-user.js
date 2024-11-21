@@ -13,6 +13,10 @@ module.exports = {
         allowNull: false,
         unique:true
       },
+      email: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       password: {
         type: Sequelize.STRING,
         allowNull: false
@@ -23,6 +27,10 @@ module.exports = {
       },
       last_name: {
         type: Sequelize.STRING,
+        allowNull: false
+      },
+      date_of_birth: {
+        type: Sequelize.DATEONLY,
         allowNull: false
       },
       is_admin : {

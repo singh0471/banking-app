@@ -33,10 +33,10 @@ class LedgerService{
             transaction: t,
             where: finalWhere
           };
-
+            
             const { count, rows } = await ledgerConfig.model.findAndCountAll(arg);
               await commit(t);
-
+            
               Logger.info("view ledger service ended");
               return { count, rows };
 

@@ -28,7 +28,14 @@ module.exports = {
           model:"banks",
           key:"id"
         },
+        
         onDelete:"CASCADE"
+      },
+      
+      bank_name: {
+        type: Sequelize.STRING,
+        allowNull:false,
+        
       },
       created_at: {
         allowNull: false,

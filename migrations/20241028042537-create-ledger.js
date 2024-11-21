@@ -13,10 +13,18 @@ module.exports = {
         },
         onDelete:"CASCADE"
       },
+      bank_name : {
+        type:Sequelize.STRING,
+        allowNull:false
+      },
       another_bank_id: {
         type: Sequelize.UUID,
         allowNull:false,
         primaryKey:true
+      },
+      another_bank_name : {
+        type:Sequelize.STRING,
+        allowNull:false
       },
       net_balance: {
         type: Sequelize.INTEGER,
