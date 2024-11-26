@@ -276,9 +276,11 @@ class BankService{
            
           for (const { parameter, value } of updates) {
               if (!parameter || typeof parameter !== "string") {
+                console.log(parameter);
                   throw new InvalidError(`Invalid parameter: ${parameter}`);
               }
               if (value === undefined || value === null) {
+                console.log(value);
                   throw new InvalidError(`Invalid value for parameter: ${parameter}`);
               }
   

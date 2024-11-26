@@ -30,11 +30,15 @@ class KYCController {
             Logger.info("Submitting KYC for user");
 
             const { userId } = req.params;
-            const { document } = req.body;
-
-            if (!document) throw new InvalidError("Document is required");
-
-            const kyc = await this.kycService.submitKYC(userId, document);
+            const { aadhar,pan } = req.body;
+             
+            console.log("aadhar ",aadhar);
+            console.log("pan ",pan);
+            
+            if (!aadhar) throw new InvalidError("aadhar is required");
+            if (!pan) throw new InvalidError("pan is required");
+            console.log("come on")
+            const kyc = await this.kycService.submitKYC(userId, aadhar,pan);
             res.status(HttpStatusCode.Created).json(kyc);
         } catch (error) {
             next(error);

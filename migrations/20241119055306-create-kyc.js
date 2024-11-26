@@ -19,7 +19,10 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
-      document: {
+      aadhar: {
+        type: Sequelize.STRING,
+      },
+      pan: {
         type: Sequelize.STRING,
       },
       status: {

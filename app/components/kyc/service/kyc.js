@@ -32,7 +32,7 @@ class KYCService {
     }
 
     
-    async submitKYC(userId, document, t) {
+    async submitKYC(userId, aadhar,pan, t) {
         if (!t) t = await transaction();
 
         try {
@@ -46,7 +46,8 @@ class KYCService {
             if (!kyc) throw new NotFoundError("KYC record not found");
 
             
-            kyc.document = document;
+            kyc.aadhar = aadhar;
+            kyc.pan = pan,
             kyc.status = "submitted";
             kyc.adminNote = "";
             await kyc.save({ transaction: t });

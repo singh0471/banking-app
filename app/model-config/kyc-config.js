@@ -8,7 +8,8 @@ class KycConfig{
     this.fieldMapping = {
         id:"id",
         userId:"userId",
-        document:"document",
+        aadhar:"aadhar",
+        pan:"pan",
         status:"status",
         adminNote:"adminNote",
         createdAt :"createdAt",
@@ -23,7 +24,8 @@ class KycConfig{
     this.columnMapping = {
         id : this.model.rawAttributes[this.fieldMapping.id].field,
         userId : this.model.rawAttributes[this.fieldMapping.userId].field,
-        document : this.model.rawAttributes[this.fieldMapping.document].field,
+        aadhar : this.model.rawAttributes[this.fieldMapping.aadhar].field,
+        pan : this.model.rawAttributes[this.fieldMapping.pan].field,
         status : this.model.rawAttributes[this.fieldMapping.status].field,
         adminNote : this.model.rawAttributes[this.fieldMapping.adminNote].field,
         createdAt : this.model.rawAttributes[this.fieldMapping.createdAt].field,
@@ -52,9 +54,16 @@ class KycConfig{
                 }
             }
         },
-        document : (val) => {
+        aadhar : (val) => {
             return {
-                [`${this.columnMapping.document}`] : {
+                [`${this.columnMapping.aadhar}`] : {
+                    [Op.like] : `%${val}%`
+                }
+            }
+        },
+        pan : (val) => {
+            return {
+                [`${this.columnMapping.pan}`] : {
                     [Op.like] : `%${val}%`
                 }
             }
